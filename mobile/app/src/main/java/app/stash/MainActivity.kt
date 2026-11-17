@@ -78,17 +78,21 @@ class MainActivity : AppCompatActivity() {
     private fun openOffer(offer: OfferItem) {
         if (offer.url.isBlank()) return
         if (offer.openMode.equals("external", ignoreCase = true)) {
-            try {
-                startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(offer.url)))
-            } catch (_: Exception) {
-                Toast.makeText(this, "Cannot open link", Toast.LENGTH_SHORT).show()
-            }
+            openExternalLink(offer.url)
         } else {
             val intent = Intent(this, OfferWebViewActivity::class.java).apply {
                 putExtra(OfferWebViewActivity.EXTRA_URL, offer.url)
                 putExtra(OfferWebViewActivity.EXTRA_TITLE, offer.providerName)
             }
             startActivity(intent)
+        }
+    }
+
+    private fun openExternalLink(url: String) {
+        try {
+            startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(url)))
+        } catch (_: Exception) {
+            Toast.makeText(this, R.string.cannot_open_link, Toast.LENGTH_SHORT).show()
         }
     }
 
@@ -148,6 +152,14 @@ class MainActivity : AppCompatActivity() {
 
         b.rowChangeCurrency.setOnClickListener {
             showCurrencyDialog()
+        }
+
+        b.rowPrivacyPolicy.setOnClickListener {
+            openExternalLink("https://loanshark.cc/privacy.html")
+        }
+
+        b.rowTermsOfService.setOnClickListener {
+            openExternalLink("https://loanshark.cc/terms.html")
         }
 
         b.switchNotifications.isChecked = ExpenseStorage.isNotificationsEnabled(this)
