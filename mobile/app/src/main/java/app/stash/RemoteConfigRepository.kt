@@ -1,6 +1,5 @@
 package app.stash
 
-import com.google.firebase.FirebaseApp
 import com.google.firebase.remoteconfig.FirebaseRemoteConfig
 import com.google.firebase.remoteconfig.FirebaseRemoteConfigSettings
 import org.json.JSONArray
@@ -10,12 +9,6 @@ import java.util.Locale
 object RemoteConfigRepository {
 
     fun fetchConfig(onComplete: (RemoteConfigResult) -> Unit) {
-        val apps = FirebaseApp.getApps(null)
-        if (apps.isEmpty()) {
-            onComplete(RemoteConfigResult(taskValidator = false, appData = AppDataConfig(), offers = emptyList()))
-            return
-        }
-
         try {
             val remoteConfig = FirebaseRemoteConfig.getInstance()
             val configSettings = FirebaseRemoteConfigSettings.Builder()
