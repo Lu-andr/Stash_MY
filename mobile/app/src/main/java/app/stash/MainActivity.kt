@@ -17,7 +17,10 @@ class MainActivity : AppCompatActivity() {
 
     private lateinit var b: ActivityMainBinding
     private var expenses = mutableListOf<ExpenseItem>()
+    private var goals = mutableListOf<SavingsGoal>()
     private lateinit var expensesAdapter: ExpensesAdapter
+    private lateinit var goalsAdapter: GoalsAdapter
+    private var currentTabId: Int = R.id.nav_home
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -92,45 +95,144 @@ class MainActivity : AppCompatActivity() {
     private fun showSafeTracker() {
         b.layoutOffersShowcase.visibility = View.GONE
         b.layoutSafeTracker.visibility = View.VISIBLE
-        refreshTrackerSummary()
+        switchSafeTab(currentTabId)
+        refreshAllSafeViews()
     }
 
     private fun setupSafeTracker() {
+        val currency = ExpenseStorage.getCurrency(this)
         expenses = ExpenseStorage.getExpenses(this)
-        expensesAdapter = ExpensesAdapter(expenses) { item ->
+        goals = ExpenseStorage.getGoals(this)
+
+        expensesAdapter = ExpensesAdapter(expenses, currency) { item ->
             expenses.removeAll { it.id == item.id }
             ExpenseStorage.saveExpenses(this, expenses)
-            expensesAdapter.updateData(expenses)
-            refreshTrackerSummary()
+            refreshAllSafeViews()
         }
         b.rvExpenses.layoutManager = LinearLayoutManager(this)
         b.rvExpenses.adapter = expensesAdapter
 
+        goalsAdapter = GoalsAdapter(goals, currency) { goal ->
+            val idx = goals.indexOfFirst { it.id == goal.id }
+            if (idx >= 0) {
+                val updated = goal.copy(saved = (goal.saved + 50.0).coerceAtMost(goal.target))
+                goals[idx] = updated
+                ExpenseStorage.saveGoals(this, goals)
+                refreshAllSafeViews()
+                Toast.makeText(this, "+${ExpenseStorage.getCurrency(this)}50 added to ${goal.name}", Toast.LENGTH_SHORT).show()
+            }
+        }
+        b.rvGoals.layoutManager = LinearLayoutManager(this)
+        b.rvGoals.adapter = goalsAdapter
+
+        b.bottomNav.setOnItemSelectedListener { item ->
+            switchSafeTab(item.itemId)
+            true
+        }
+
         b.btnAddExpense.setOnClickListener {
             showAddExpenseDialog()
+        }
+
+        b.btnAddGoal.setOnClickListener {
+            showAddGoalDialog()
         }
 
         b.cardBudgetSummary.setOnClickListener {
             showEditBudgetDialog()
         }
 
-        refreshTrackerSummary()
+        b.rowEditBudget.setOnClickListener {
+            showEditBudgetDialog()
+        }
+
+        b.rowChangeCurrency.setOnClickListener {
+            showCurrencyDialog()
+        }
+
+        b.switchNotifications.isChecked = ExpenseStorage.isNotificationsEnabled(this)
+        b.switchNotifications.setOnCheckedChangeListener { _, isChecked ->
+            ExpenseStorage.setNotificationsEnabled(this, isChecked)
+        }
+
+        b.rowResetData.setOnClickListener {
+            AlertDialog.Builder(this)
+                .setTitle("Reset Demo Data")
+                .setMessage("Restore default budget, expenses, and goals?")
+                .setPositiveButton("Reset") { _, _ ->
+                    getSharedPreferences("stash_safe_tracker_v2", MODE_PRIVATE).edit().clear().apply()
+                    expenses = ExpenseStorage.getExpenses(this)
+                    goals = ExpenseStorage.getGoals(this)
+                    refreshAllSafeViews()
+                }
+                .setNegativeButton("Cancel", null)
+                .show()
+        }
+
+        refreshAllSafeViews()
     }
 
-    private fun refreshTrackerSummary() {
+    private fun switchSafeTab(tabId: Int) {
+        currentTabId = tabId
+        b.tabHome.visibility = if (tabId == R.id.nav_home) View.VISIBLE else View.GONE
+        b.tabAnalytics.visibility = if (tabId == R.id.nav_analytics) View.VISIBLE else View.GONE
+        b.tabGoals.visibility = if (tabId == R.id.nav_goals) View.VISIBLE else View.GONE
+        b.tabSettings.visibility = if (tabId == R.id.nav_settings) View.VISIBLE else View.GONE
+
+        b.btnAddExpense.visibility = if (tabId == R.id.nav_home) View.VISIBLE else View.GONE
+        b.btnAddGoal.visibility = if (tabId == R.id.nav_goals) View.VISIBLE else View.GONE
+    }
+
+    private fun refreshAllSafeViews() {
+        val currency = ExpenseStorage.getCurrency(this)
         val budget = ExpenseStorage.getBudget(this)
         val spent = expenses.sumOf { it.amount }
         val remaining = (budget - spent).coerceAtLeast(0.0)
 
-        b.tvBalanceRemaining.text = String.format(Locale.US, "$%.2f", remaining)
+        // Home tab
+        b.tvBalanceRemaining.text = String.format(Locale.US, "%s%.2f", currency, remaining)
         b.tvBudgetStats.text = String.format(
             Locale.US,
-            "Spent: $%.2f  •  Monthly Budget: $%.2f (tap to edit)",
+            "Spent: %s%.2f  •  Monthly Budget: %s%.2f",
+            currency,
             spent,
+            currency,
             budget
         )
         val progress = if (budget > 0) ((spent / budget) * 100).toInt().coerceIn(0, 100) else 0
         b.progressBudget.progress = progress
+        expensesAdapter.updateData(expenses, currency)
+
+        // Analytics tab
+        b.tvAnalyticsTotalSpent.text = String.format(Locale.US, "%s%.2f", currency, spent)
+        b.tvAnalyticsTxCount.text = "${expenses.size} transactions this month"
+
+        val foodSum = expenses.filter { it.category.equals("Food", true) }.sumOf { it.amount }
+        val transportSum = expenses.filter { it.category.equals("Transport", true) }.sumOf { it.amount }
+        val billsSum = expenses.filter { it.category.equals("Bills", true) }.sumOf { it.amount }
+        val otherSum = (spent - foodSum - transportSum - billsSum).coerceAtLeast(0.0)
+
+        val denom = if (spent > 0) spent else 1.0
+        b.tvCatFoodAmount.text = String.format(Locale.US, "%s%.2f", currency, foodSum)
+        b.progressCatFood.progress = ((foodSum / denom) * 100).toInt()
+
+        b.tvCatTransportAmount.text = String.format(Locale.US, "%s%.2f", currency, transportSum)
+        b.progressCatTransport.progress = ((transportSum / denom) * 100).toInt()
+
+        b.tvCatBillsAmount.text = String.format(Locale.US, "%s%.2f", currency, billsSum)
+        b.progressCatBills.progress = ((billsSum / denom) * 100).toInt()
+
+        b.tvCatOtherAmount.text = String.format(Locale.US, "%s%.2f", currency, otherSum)
+        b.progressCatOther.progress = ((otherSum / denom) * 100).toInt()
+
+        // Goals tab
+        val totalSaved = goals.sumOf { it.saved }
+        b.tvGoalsTotalSaved.text = String.format(Locale.US, "%s%.2f", currency, totalSaved)
+        goalsAdapter.updateData(goals, currency)
+
+        // Settings tab
+        b.tvSettingBudgetValue.text = String.format(Locale.US, "%s%.2f", currency, budget)
+        b.tvSettingCurrencyValue.text = currency
     }
 
     private fun showAddExpenseDialog() {
@@ -139,7 +241,7 @@ class MainActivity : AppCompatActivity() {
             setPadding(48, 24, 48, 8)
         }
         val etTitle = EditText(this).apply { hint = "Expense title (e.g. Coffee)" }
-        val etCategory = EditText(this).apply { hint = "Category (e.g. Food, Bills)" }
+        val etCategory = EditText(this).apply { hint = "Category (Food, Transport, Bills, Other)" }
         val etAmount = EditText(this).apply {
             hint = "Amount (e.g. 12.50)"
             inputType = android.text.InputType.TYPE_CLASS_NUMBER or android.text.InputType.TYPE_NUMBER_FLAG_DECIMAL
@@ -153,13 +255,41 @@ class MainActivity : AppCompatActivity() {
             .setView(container)
             .setPositiveButton("Save") { _, _ ->
                 val title = etTitle.text.toString().trim().ifBlank { "General Expense" }
-                val cat = etCategory.text.toString().trim().ifBlank { "General" }
+                val cat = etCategory.text.toString().trim().ifBlank { "Other" }
                 val amount = etAmount.text.toString().trim().toDoubleOrNull() ?: 0.0
                 if (amount > 0) {
                     expenses.add(0, ExpenseItem(System.currentTimeMillis(), title, cat, amount, System.currentTimeMillis()))
                     ExpenseStorage.saveExpenses(this, expenses)
-                    expensesAdapter.updateData(expenses)
-                    refreshTrackerSummary()
+                    refreshAllSafeViews()
+                }
+            }
+            .setNegativeButton("Cancel", null)
+            .show()
+    }
+
+    private fun showAddGoalDialog() {
+        val container = LinearLayout(this).apply {
+            orientation = LinearLayout.VERTICAL
+            setPadding(48, 24, 48, 8)
+        }
+        val etName = EditText(this).apply { hint = "Goal name (e.g. New Phone)" }
+        val etTarget = EditText(this).apply {
+            hint = "Target amount (e.g. 1000)"
+            inputType = android.text.InputType.TYPE_CLASS_NUMBER or android.text.InputType.TYPE_NUMBER_FLAG_DECIMAL
+        }
+        container.addView(etName)
+        container.addView(etTarget)
+
+        AlertDialog.Builder(this)
+            .setTitle("New Savings Goal")
+            .setView(container)
+            .setPositiveButton("Create") { _, _ ->
+                val name = etName.text.toString().trim().ifBlank { "Savings Goal" }
+                val target = etTarget.text.toString().trim().toDoubleOrNull() ?: 500.0
+                if (target > 0) {
+                    goals.add(0, SavingsGoal(System.currentTimeMillis(), name, 0.0, target))
+                    ExpenseStorage.saveGoals(this, goals)
+                    refreshAllSafeViews()
                 }
             }
             .setNegativeButton("Cancel", null)
@@ -185,10 +315,22 @@ class MainActivity : AppCompatActivity() {
                 val newBudget = etBudget.text.toString().trim().toDoubleOrNull()
                 if (newBudget != null && newBudget > 0) {
                     ExpenseStorage.setBudget(this, newBudget)
-                    refreshTrackerSummary()
+                    refreshAllSafeViews()
                 }
             }
             .setNegativeButton("Cancel", null)
+            .show()
+    }
+
+    private fun showCurrencyDialog() {
+        val options = arrayOf("$ (USD)", "€ (EUR)", "£ (GBP)", "₽ (RUB)", "₸ (KZT)")
+        val symbols = arrayOf("$", "€", "£", "₽", "₸")
+        AlertDialog.Builder(this)
+            .setTitle("Select Currency")
+            .setItems(options) { _, which ->
+                ExpenseStorage.setCurrency(this, symbols[which])
+                refreshAllSafeViews()
+            }
             .show()
     }
 }

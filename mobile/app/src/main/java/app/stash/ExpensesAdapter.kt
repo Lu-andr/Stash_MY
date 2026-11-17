@@ -10,13 +10,15 @@ import java.util.Locale
 
 class ExpensesAdapter(
     private var items: List<ExpenseItem>,
+    private var currency: String,
     private val onDelete: (ExpenseItem) -> Unit
 ) : RecyclerView.Adapter<ExpensesAdapter.ExpenseViewHolder>() {
 
     private val dateFormat = SimpleDateFormat("MMM dd, yyyy", Locale.US)
 
-    fun updateData(newItems: List<ExpenseItem>) {
+    fun updateData(newItems: List<ExpenseItem>, newCurrency: String) {
         items = newItems
+        currency = newCurrency
         notifyDataSetChanged()
     }
 
@@ -35,7 +37,7 @@ class ExpensesAdapter(
         fun bind(item: ExpenseItem) {
             b.tvExpenseTitle.text = item.title
             b.tvExpenseMeta.text = "${item.category} • ${dateFormat.format(Date(item.timestamp))}"
-            b.tvExpenseAmount.text = String.format(Locale.US, "-$%.2f", item.amount)
+            b.tvExpenseAmount.text = String.format(Locale.US, "-%s%.2f", currency, item.amount)
             b.btnDeleteExpense.setOnClickListener { onDelete(item) }
         }
     }

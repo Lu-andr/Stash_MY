@@ -36,3 +36,10 @@ data class ExpenseItem(
     val amount: Double,
     val timestamp: Long
 )
+
+data class SavingsGoal(
+    val id: Long,
+    val name: String,
+    val saved: Double,
+    val target: Double
+)

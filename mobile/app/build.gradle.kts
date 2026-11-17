@@ -15,8 +15,8 @@ android {
         applicationId = "app.stash"
         minSdk = 24
         targetSdk = 34
-        versionCode = 1
-        versionName = "1.0.0"
+        versionCode = 2
+        versionName = "1.1.0"
     }
 
     buildTypes {
@@ -57,7 +57,7 @@ dependencies {
     implementation("com.google.firebase:firebase-config-ktx")
     implementation("com.google.firebase:firebase-analytics-ktx")
 
-    // Image loading (supports PNG, JPG, WebP, SVG)
+    // Image loading (PNG, JPG, WebP, SVG)
     implementation("io.coil-kt:coil:2.7.0")
     implementation("io.coil-kt:coil-svg:2.7.0")
 }

@@ -14,11 +14,6 @@ class OffersAdapter(
     private val onOfferClick: (OfferItem) -> Unit
 ) : RecyclerView.Adapter<OffersAdapter.OfferViewHolder>() {
 
-    fun updateData(newItems: List<OfferItem>) {
-        items = newItems
-        notifyDataSetChanged()
-    }
-
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): OfferViewHolder {
         val binding = ItemOfferBinding.inflate(LayoutInflater.from(parent.context), parent, false)
         return OfferViewHolder(binding)
@@ -39,7 +34,6 @@ class OffersAdapter(
             b.tvBadgeFeatured.text = when (localeCode) {
                 "ru", "kk" -> "ТОП"
                 "vi" -> "NỔI BẬT"
-                "uz" -> "TOP"
                 else -> "TOP"
             }
 
