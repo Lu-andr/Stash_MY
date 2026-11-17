@@ -1,0 +1,10 @@
+<resources>
+    <color name="bg_primary">#F5F7FA</color>
+    <color name="card_surface">#FFFFFF</color>
+    <color name="accent_primary">#16A34A</color>
+    <color name="accent_dark">#15803D</color>
+    <color name="accent_soft">#DCFCE7</color>
+    <color name="text_primary">#0F172A</color>
+    <color name="text_secondary">#64748B</color>
+    <color name="border_subtle">#E2E8F0</color>
+</resources>
