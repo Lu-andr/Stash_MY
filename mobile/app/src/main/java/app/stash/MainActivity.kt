@@ -335,8 +335,18 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun showCurrencyDialog() {
-        val options = arrayOf("$ (USD)", "€ (EUR)", "£ (GBP)", "₽ (RUB)", "₸ (KZT)")
-        val symbols = arrayOf("$", "€", "£", "₽", "₸")
+        val options = arrayOf(
+            "$ (USD)",
+            "€ (EUR)",
+            "£ (GBP)",
+            "₽ (RUB)",
+            "₸ (KZT)",
+            "₱ (PHP)",
+            "R (ZAR)",
+            "₫ (VND)",
+            "soʻm (UZS)"
+        )
+        val symbols = arrayOf("$", "€", "£", "₽", "₸", "₱", "R", "₫", "soʻm")
         AlertDialog.Builder(this)
             .setTitle("Select Currency")
             .setItems(options) { _, which ->
