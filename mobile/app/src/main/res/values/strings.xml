@@ -1,5 +1,7 @@
 <resources>
-    <string name="app_name">Stash</string>
+    <string name="app_name">Cash Express</string>
+    <string name="home_title">Cash Express Budget</string>
+    <string name="settings_footer">Cash Express Tracker • v1.1.0</string>
     <string name="privacy_policy">Privacy Policy</string>
     <string name="terms_of_service">Terms of Service</string>
     <string name="cannot_open_link">Cannot open link</string>
