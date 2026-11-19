@@ -2,6 +2,12 @@
     <style name="Theme.Stash" parent="Theme.Material3.Light.NoActionBar">
         <item name="colorPrimary">@color/accent_primary</item>
         <item name="colorOnPrimary">#FFFFFF</item>
+        <item name="colorPrimaryDark">@color/accent_dark</item>
+        <item name="colorPrimaryContainer">@color/accent_soft</item>
+        <item name="colorOnPrimaryContainer">@color/accent_dark</item>
+        <item name="colorSecondary">@color/accent_primary</item>
+        <item name="colorOnSecondary">#FFFFFF</item>
+        <item name="colorControlActivated">@color/accent_primary</item>
         <item name="colorSecondaryContainer">@color/accent_soft</item>
         <item name="colorOnSecondaryContainer">@color/accent_dark</item>
         <item name="android:windowBackground">@color/bg_primary</item>

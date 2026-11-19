@@ -105,7 +105,7 @@
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:text="Remaining Budget"
-                                android:textColor="#DCFCE7"
+                                android:textColor="@color/accent_soft"
                                 android:textSize="13sp" />
 
                             <TextView
@@ -126,7 +126,7 @@
                                 android:layout_marginTop="12dp"
                                 android:max="100"
                                 android:progress="10"
-                                android:progressBackgroundTint="#4ADE80"
+                                android:progressBackgroundTint="@color/accent_track"
                                 android:progressTint="#FFFFFF" />
 
                             <TextView
@@ -135,7 +135,7 @@
                                 android:layout_height="wrap_content"
                                 android:layout_marginTop="8dp"
                                 android:text="Spent: $137.50 • Monthly Budget: $2500.00"
-                                android:textColor="#ECFDF5"
+                                android:textColor="@color/accent_on_surface_soft"
                                 android:textSize="12sp" />
                         </LinearLayout>
                     </com.google.android.material.card.MaterialCardView>
@@ -199,7 +199,7 @@
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
                                     android:text="Total Monthly Spending"
-                                    android:textColor="#DCFCE7"
+                                    android:textColor="@color/accent_soft"
                                     android:textSize="13sp" />
 
                                 <TextView
@@ -218,7 +218,7 @@
                                     android:layout_height="wrap_content"
                                     android:layout_marginTop="6dp"
                                     android:text="4 transactions this month"
-                                    android:textColor="#ECFDF5"
+                                    android:textColor="@color/accent_on_surface_soft"
                                     android:textSize="12sp" />
                             </LinearLayout>
                         </com.google.android.material.card.MaterialCardView>
@@ -413,7 +413,7 @@
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:text="Total Saved Across Goals"
-                                android:textColor="#DCFCE7"
+                                android:textColor="@color/accent_soft"
                                 android:textSize="13sp" />
 
                             <TextView
