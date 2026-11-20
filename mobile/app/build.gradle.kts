@@ -12,7 +12,7 @@ android {
     compileSdk = 36
 
     defaultConfig {
-        applicationId = "app.stash"
+        applicationId = "com.cashexpress.qarz.zaim.kredit.olish"
         minSdk = 24
         targetSdk = 36
         versionCode = 2
