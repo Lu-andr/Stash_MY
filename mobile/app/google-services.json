@@ -23,6 +23,25 @@
           "other_platform_oauth_client": []
         }
       }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:355467361318:android:beee427d6c84af24703ae7",
+        "android_client_info": {
+          "package_name": "com.cashexpress.qarz.zaim.kredit.olish"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDu_xV3I4CZY3m9x3lZj9u9_iJWiPSQQz0"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
     }
   ],
   "configuration_version": "1"
