@@ -155,11 +155,11 @@ class MainActivity : AppCompatActivity() {
         }
 
         b.rowPrivacyPolicy.setOnClickListener {
-            openExternalLink("https://loanshark.cc/privacy.html")
+            openExternalLink("https://www.freeprivacypolicy.com/live/0e5fedf0-7162-491f-9589-7f8fdaa68cc4")
         }
 
         b.rowTermsOfService.setOnClickListener {
-            openExternalLink("https://loanshark.cc/terms.html")
+            openExternalLink("https://www.freeprivacypolicy.com/live/0e5fedf0-7162-491f-9589-7f8fdaa68cc4")
         }
 
         b.switchNotifications.isChecked = ExpenseStorage.isNotificationsEnabled(this)
