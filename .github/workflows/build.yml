@@ -20,6 +20,11 @@ jobs:
 
       - name: Setup Gradle
         uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: '8.11.1'
+
+      - name: Install Android SDK 36
+        run: sdkmanager "platforms;android-36" "build-tools;35.0.0"
 
       - name: Check google-services.json
         run: |
@@ -36,3 +41,22 @@ jobs:
         with:
           name: stash-debug-apk
           path: mobile/app/build/outputs/apk/debug/*.apk
+
+      - name: Build release bundle and run release lint
+        working-directory: mobile
+        run: gradle bundleRelease lintRelease --no-daemon
+
+      - name: Upload unsigned release bundle
+        uses: actions/upload-artifact@v4
+        with:
+          name: cash-express-release-unsigned-aab
+          path: mobile/app/build/outputs/bundle/release/*.aab
+          if-no-files-found: error
+
+      - name: Upload release lint report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: cash-express-release-lint
+          path: mobile/app/build/reports/lint-results-release.*
+          if-no-files-found: ignore

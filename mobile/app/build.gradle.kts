@@ -9,12 +9,12 @@ if (file("google-services.json").exists()) {
 
 android {
     namespace = "app.stash"
-    compileSdk = 34
+    compileSdk = 36
 
     defaultConfig {
         applicationId = "app.stash"
         minSdk = 24
-        targetSdk = 34
+        targetSdk = 36
         versionCode = 2
         versionName = "1.1.0"
     }
